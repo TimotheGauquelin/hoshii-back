@@ -7,6 +7,7 @@ import User from "../models/User.js";
 const router = express.Router();
 
 //REGISTER
+
 router.post("/register", async (req, res) => {
   const newUser = new User({
     username: req.body.username,
@@ -31,12 +32,13 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
+    console.log(req);
     const user = await User.findOne({ username: req.body.username });
     !user && res.status(401).json("Mauvais identifiants");
 
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
-      process.env.PASS_SEC
+      process.env.PASSWORD_SECRET_ENCODING
     );
 
     const OriginalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);

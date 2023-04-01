@@ -6,6 +6,7 @@ import cors from "cors";
 const app = express();
 
 import authRoute from "./routes/auth.js";
+import listRoute from "./routes/list.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoute);
+app.use("/api/list", listRoute);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(
