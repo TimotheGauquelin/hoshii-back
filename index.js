@@ -7,6 +7,7 @@ const app = express();
 
 import authRoute from "./routes/auth.js";
 import listRoute from "./routes/list.js";
+import userRoute from "./routes/user.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/list", listRoute);
+app.use("/api/user", userRoute);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(

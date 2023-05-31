@@ -6,8 +6,10 @@ const ListSchema = new mongoose.Schema(
     label: { type: String, required: true },
     presents: [
       {
-        presentId: { type: String },
-        quantity: { type: Number, default: 1 },
+        label: { type: String, required: true },
+        desc: { type: String },
+        image: { type: String },
+        price: { type: Number },
       },
     ],
   },
