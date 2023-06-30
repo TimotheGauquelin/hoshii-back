@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import * as userService from "../service/userService.js"
+import * as listService from "../service/listService.js"
 
 async function getById(req, res, next) {
 
@@ -23,9 +24,12 @@ async function addAList(req, res, next) {
       const user = await User.findOne({ _id: req.params.userId }).orFail()
   
       !user && new Error
+
+      const list = await listService.checkListAlreadyExists(req, res, next)
+      console.log(list)
   
-      const response = await userService.addAList(user, req, res, next)
-      res.status(201).json(response);
+      // const response = await userService.addAList(user, req, res, next)
+      // res.status(201).json(response);
 
     } catch (err) {
 
@@ -73,7 +77,7 @@ async function deleteAList(req, res, next) {
 
     try {
 
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await User.findOne({ _id: req.params.userId }).orFail();
 
       !user && new Error
 
@@ -92,7 +96,7 @@ async function deleteAList(req, res, next) {
 
     try {
 
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await User.findOne({ _id: req.params.userId }).orFail();
 
       !user && new Error
 
@@ -113,7 +117,7 @@ async function deleteAList(req, res, next) {
 
     try {
 
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await User.findOne({ _id: req.params.userId }).orFail();
 
       !user && new Error
       
