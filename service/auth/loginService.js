@@ -1,4 +1,4 @@
-import CustomError from "../../error/custom_error/CustomError.js";
+import CustomError from "../../error/CustomError.js";
 import errorCodes from "../../error/errorCodes.js";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
