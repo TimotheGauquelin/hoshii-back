@@ -1,22 +1,40 @@
-import List from "../models/List.js";
 import express from "express";
+
+import Present from "../models/Present.js";
 import User from "../models/User.js";
-import verifyToken from "./verifyToken.js";
+
+import * as userControler from "../controler/userControler.js"
 
 const router = express.Router();
 
-//GET MY FRIENDS
+//GET ONE USER
 
-router.get("/:userId", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findOne({ _id: req.params.userId });
-    console.log(user);
-    !user && res.status(401).json("Pas d'utilisateur avec cet ID");
+router.get("/:userId", userControler.getById)
 
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+//CREATE A LIST OF PRESENTS
+
+router.post("/:userId/newList", userControler.addAList);
+
+//CREATE A PRESENT INSIDE LIST
+
+router.post("/:userId/list/:listId/newPresent", userControler.addAPresent);
+
+//DELETE A LIST OF PRESENTS
+
+router.delete("/:userId/list/:listId/deletedlist", userControler.deleteAList)
+
+//  DELETE A PRESENT FROM A LIST
+
+router.delete("/:userId/list/:listId/present/:presentId/deletedPresent", userControler.deleteAPresent);
+
+// UPDATE A LIST
+
+
+router.put("/:userId/list/:listId/updateList", userControler.updateAList);
+
+// UPDATE A PRESENT
+
+router.put("/:userId/list/:listId/present/:presentId/updatePresent", userControler.updateAPresent);
+
 
 export default router;
