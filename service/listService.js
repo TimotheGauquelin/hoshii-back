@@ -10,12 +10,8 @@ const checkListAlreadyExists = async (req, res, next) => {
     );
 
     if (checkIfListNameAlreadyExists[0].lists.length > 0) {
-      console.log(checkIfListNameAlreadyExists[0].lists.length);
-      console.log(checkIfListNameAlreadyExists[0].lists.length > 0);
       return true;
     } else {
-      console.log(checkIfListNameAlreadyExists[0].lists.length);
-      console.log(checkIfListNameAlreadyExists[0].lists.length > 0);
       return false;
     }
   } catch (error) {
