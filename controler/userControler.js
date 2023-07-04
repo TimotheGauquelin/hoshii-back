@@ -2,6 +2,15 @@ import User from "../models/User.js";
 import * as userService from "../service/userService.js";
 import * as listService from "../service/listService.js";
 
+async function getAllUsers(req, res, next) {
+  try {
+    const response = await userService.getAllUsers(req, res, next);
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getById(req, res, next) {
   try {
     const response = await userService.getById(req, res, next);
@@ -104,6 +113,7 @@ async function updateAPresent(req, res, next) {
 }
 
 export {
+  getAllUsers,
   getById,
   addAList,
   addAPresent,
