@@ -1,9 +1,7 @@
 import express from "express";
 
-import Present from "../models/Present.js";
-import User from "../models/User.js";
-
 import * as userControler from "../controler/userControler.js";
+import * as jwtUtils from "../security/jwtUtils.js"
 
 const router = express.Router();
 
@@ -11,38 +9,66 @@ const router = express.Router();
 
 router.get("/", userControler.getAllUsers);
 
+//GET ALL USERS BUT ME AND MY FRIENDS
+
+router.get("/allUsersButMySearchAndMeAndMyFriends/:username", jwtUtils.authenticateJWT, userControler.getAllUsersButMySearchAndMeAndMyFriends);
+
+//GET OWN 
+
+router.get("/myProfil", jwtUtils.authenticateJWT, userControler.getMyProfil);
+
 //GET ONE USER
 
 router.get("/:userId", userControler.getById);
 
 //CREATE A LIST OF PRESENTS
 
-router.post("/:userId/newList", userControler.addAList);
+router.post("/myProfil/newList", jwtUtils.authenticateJWT, userControler.addAList);
 
 //CREATE A PRESENT INSIDE LIST
 
-router.post("/:userId/list/:listId/newPresent", userControler.addAPresent);
+router.post("/myProfil/list/:listId/newPresent", jwtUtils.authenticateJWT, userControler.addAPresent);
 
 //DELETE A LIST OF PRESENTS
 
-router.delete("/:userId/list/:listId/deletedlist", userControler.deleteAList);
+router.delete("/myProfil/list/:listId/deletedlist", jwtUtils.authenticateJWT, userControler.deleteAList);
 
 //  DELETE A PRESENT FROM A LIST
 
 router.delete(
-  "/:userId/list/:listId/present/:presentId/deletedPresent",
+  "/myProfil/list/:listId/present/:presentId/deletedPresent",
+  jwtUtils.authenticateJWT,
   userControler.deleteAPresent
 );
 
 // UPDATE A LIST
 
-router.put("/:userId/list/:listId/updatedList", userControler.updateAList);
+router.put("/myProfil/list/:listId/updatedList", jwtUtils.authenticateJWT, userControler.updateAList);
 
 // UPDATE A PRESENT
 
 router.put(
-  "/:userId/list/:listId/present/:presentId/updatedPresent",
+  "/myProfil/list/:listId/present/:presentId/updatedPresent",
+  jwtUtils.authenticateJWT, 
   userControler.updateAPresent
 );
+
+// USER1 TAKES A PRESENT IN THE LIST OF USER2
+
+router.put(
+  "/:friendId/list/:friendListId/present/:friendPresentId/takeAPresent",
+  jwtUtils.authenticateJWT, 
+  userControler.takeAPresent
+);
+
+// USER1 PUTS HIS PRESENT BACK IN THE LIST OF USER2
+
+router.put(
+  "/:friendId/list/:friendListId/present/:friendPresentId/putAPresentBackInTheList",
+  jwtUtils.authenticateJWT, 
+  userControler.putAPresentBackInTheList
+);
+
+
 
 export default router;

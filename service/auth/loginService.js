@@ -25,9 +25,13 @@ async function login (req, res, next) {
             throw new CustomError(errorCodes.WRONG_LOG)
         }
 
+        console.log(USER)
+
         const ACCESS_TOKEN = jwt.sign(
             {
                 id: USER._id,
+                username: USER.username,
+                picture: USER.picture,
                 isAdmin: USER.isAdmin,
             },
             process.env.JWT_SECRET_CODE,

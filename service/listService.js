@@ -5,7 +5,7 @@ const checkListAlreadyExists = async (req, res, next) => {
     const list = req.body;
 
     const checkIfListNameAlreadyExists = await User.find(
-      { _id: req.params.userId },
+      { _id: req.user.id },
       { lists: { $elemMatch: { label: list.label } } }
     );
 

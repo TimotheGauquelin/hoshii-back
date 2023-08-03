@@ -1,5 +1,6 @@
 import loginService from '../service/auth/loginService.js'
 import registerService from '../service/auth/registerService.js'
+import * as userService from '../service/userService.js'
 
 import Joi from 'joi';
 
@@ -7,30 +8,40 @@ async function registerControler(req, res, next) {
     
     try {
 
-      const schema = Joi.object({
-        username: Joi.string()
-                     .alphanum()
-                     .min(3)
-                     .max(30)
-                     .required(),
-        email: Joi.string()
-                  .email({ minDomainSegments: 2, tlds: { allow: ['fr', 'com'] } }),
-        password: Joi.string(),
-                    //  .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-        isAdmin: Joi.boolean().required(),
-        isActive: Joi.boolean().required(),
-      });
+      const checkIfUserNameAlreadyExists = await userService.checkIfUserNameAlreadyExists(req, res, next);
+      const checkIfEmailAlreadyExists = await userService.checkIfEmailAlreadyExists(req, res, next);
 
-      const {error, value} = schema.validate(req.body);
+      if (checkIfUserNameAlreadyExists === null && checkIfEmailAlreadyExists === null) {
 
-      if(error) {
+        const schema = Joi.object({
+          username: Joi.string()
+                      .alphanum()
+                      .min(3)
+                      .max(30)
+                      .required(),
+          email: Joi.string()
+                    .email({ minDomainSegments: 2, tlds: { allow: ['fr', 'com'] } }),
+          password: Joi.string(),
+                      //  .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+          isAdmin: Joi.boolean().required(),
+          isActive: Joi.boolean().required(),
+        });
 
-        res.status(400).json(error.details[0].message);
+        const {error, value} = schema.validate(req.body);
+
+        if(error) {
+
+          res.status(400).json(error.details[0].message);
+
+        } else {
+          const response = await registerService(value, res, next);
+          res.status(201).json(response);
+
+        } 
 
       } else {
 
-        const response = await registerService(value, res, next);
-        res.status(201).json(response);
+        throw new Error("Ce nom d'utilisateur et/ou cet email existe déjà");
 
       }
 

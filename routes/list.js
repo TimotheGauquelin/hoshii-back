@@ -11,7 +11,7 @@ router.get("/findByUser/:userId", async (req, res) => {
     const lists = await List.aggregate([
       {
         $match: {
-          userId: req.params.userId,
+          userId: req.user.id,
         },
       },
       {

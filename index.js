@@ -24,6 +24,13 @@ app.use("/api/auth", authRoute);
 app.use("/api/list", listRoute);
 app.use("/api/user", userRoute);
 
+
+app.get("/", (req, res) => {
+  res.json(
+    "Bienvenue sur l'API d'HOSHII"
+  )
+})
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(
     `L'API du projet Hoshii tourne sur le port ${process.env.PORT || 5000}`

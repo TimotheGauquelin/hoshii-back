@@ -15,18 +15,15 @@ async function register (req, res, next) {
         isActive: req.isActive,
     })
 
-    console.log(NEW_USER)
-    
-    // const savedUser = await NEW_USER.save();
-
     try {
 
+        console.log("test")
       const savedUser = await NEW_USER.save();
       return savedUser
 
     } catch (err) {
 
-      
+        next(err)
 
     }
 

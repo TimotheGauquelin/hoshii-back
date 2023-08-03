@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    picture: { type: String }, 
     friends: [
       {
         friendId: { type: String, required: true },
@@ -28,6 +29,11 @@ const UserSchema = new mongoose.Schema(
             desc: { type: String },
             image: { type: String },
             price: { type: Number },
+            giver: { 
+              giverId: { type: String },
+              giverUsername: { type: String },
+              giverPicture: { type: String }
+            },
           },
         ],
       },

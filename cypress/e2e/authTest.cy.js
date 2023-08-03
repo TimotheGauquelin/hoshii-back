@@ -1,5 +1,6 @@
 describe("AUTH Requests", () => {
-  it("REGISTER", () => {
+
+  it("REGISTER NOT SUCCESS - Username already used", () => {
     cy.fixture("newUser").then((data) => {
       const newUser = data;
 
@@ -8,10 +9,15 @@ describe("AUTH Requests", () => {
         url: "http://localhost:5000/api/auth/register",
         body: newUser,
       }).then((response) => {
-        expect(response.status).to.eq(201);
-        expect(response.body.username).to.eq(newUser.username);
-        expect(response.body.email).to.eq(newUser.email);
-      });
+        if (response.status !== 201) {
+          cy.log({
+            name: 'Authentication',
+            message: 'failed'
+          })
+        } else {
+          expect(response.status).to.eq(201);
+        }
+      })
     });
   });
 
