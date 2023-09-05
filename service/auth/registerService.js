@@ -1,5 +1,4 @@
 import CryptoJS from "crypto-js";
-
 import User from "../../models/User.js";
 
 async function register (req, res, next) {  
@@ -11,15 +10,14 @@ async function register (req, res, next) {
             req.password,
             process.env.PASSWORD_SECRET_ENCODING
         ).toString(),
-        isAdmin: req.isAdmin,
-        isActive: req.isActive,
+        isAdmin: false,
+        isActive: true,
     })
 
     try {
 
-        console.log("test")
-      const savedUser = await NEW_USER.save();
-      return savedUser
+      const SAVED_NEW_USER = await NEW_USER.save();
+      return SAVED_NEW_USER
 
     } catch (err) {
 

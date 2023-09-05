@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import IUser from "../interface/IUser"
 
-const UserSchema = new mongoose.Schema(
+const USER_SCHEMA = new Schema<IUser>(
   {
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -11,13 +12,14 @@ const UserSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     picture: { type: String }, 
     friends: [
       {
-        friendId: { type: String, required: true },
-        friendUsername: { type: String, required: true },
+        _id: { type: String, required: true },
+        username: { type: String, required: true },
+        status: { type: String, required: true }
       },
     ],
     lists: [
@@ -42,4 +44,4 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("User", USER_SCHEMA);

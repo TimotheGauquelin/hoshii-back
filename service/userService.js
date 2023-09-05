@@ -1,6 +1,4 @@
 import User from "../models/User.js";
-import { ObjectId } from 'mongodb'
-
 
 async function getAllUsers(req, res, next) {
   try {
@@ -13,22 +11,48 @@ async function getAllUsers(req, res, next) {
   }
 }
 
-async function getAllUsersButMySearchAndMeAndMyFriends(req, res, next) {
-
-  // const test = req.params.userName
+async function getAllUsersButMeAndMyFriends(req, res, next) {
 
   try {
 
-    const friends = ["642ad55b80650294f716edde"]
+    const myAccount = await User.findOne(
+      { _id: req.user.id },
+    )
+    
+    const friends = myAccount.friends.map(objet => objet.id)
+
+    const usersFriends = await User.find(
+      { _id: { $ne: req.user.id, $nin: friends } },   // Remove elements with ID = req.user.id & user friends ID
+    )
+
+    return usersFriends
+
+  } catch (err) {
+    next(err);
+  }
+  
+}
+
+async function getAllUsersButMySearchAndMeAndMyFriends(req, res, next) {
+
+  try {
+
+    const myAccount = await User.findOne(
+      { _id: req.user.id },   // Remove elements with ID = req.user.id & user friends ID
+    )
+    
+    const friends = myAccount.friends.map(objet => objet.id)
+
     const usernameRegex = new RegExp(`^${req.params.username}`, 'i');
     
     const usersFriends = await User.find({
       $and: [
         { _id: { $ne: req.user.id, $nin: friends } },   // Remove elements with ID = req.user.id & user friends ID
-        { username: usernameRegex }                     // Remove elements are beginning with req.params.username
+        { username: usernameRegex },                    // Remove elements are beginning with req.params.username
       ]
-      }
-    )
+    })
+
+    //Enlever aussi mes amis qui sont en requested
 
     return usersFriends
 
@@ -186,36 +210,128 @@ async function putAPresentBackInTheList(req, res, next) {
   }
 }
 
-async function checkIfUserNameAlreadyExists(req, res, next) {
+async function requestToAddAFriend(req, res, next, myAccount, friendAccount) {
   try {
 
-    const user = await User.findOne(
-      { username: req.body.username },
+    const myProfilIsPendingInsideFriendList = {
+      ...myAccount._doc,
+      status: "pending"
+    }
+
+    const myFriendAccountIsPendingInsideMyFriendList = {
+      ...friendAccount._doc,
+      status: "requested"
+    }
+
+    //Add inside requested friend my profil with a 'pending' status
+    const updatedFriendAccount = await User
+    .updateOne(
+      { _id: req.params.friendId }, 
+      {$push: { friends: myProfilIsPendingInsideFriendList }}
     )
 
-    return user
+    //Add inside my list the friend I requested with a 'requested'' status
+    const updatedMyAccount = await User
+    .updateOne(
+      { _id: req.user.id }, 
+      {$push: { friends: myFriendAccountIsPendingInsideMyFriendList }}
+    )
+
+    return {updatedFriendAccount, updatedMyAccount}
 
   } catch (err) {
     next(err);
   }
 }
 
-async function checkIfEmailAlreadyExists(req, res, next) {
+async function responsedFriendListRequest(req, res, next) {
   try {
 
-    const user = await User.findOne(
-      { email: req.body.email },
-    )
+    //Note: Je modifie en ciblant username et non _id car en ciblant l'ID, l'ami modifié etait tjrs le premier 
+    //objet du tableau d'ami et non celui avec l'ID correspondant..
 
-    return user
+    //Add inside my list the friend I requested with a 'requested' status
+    const updatedMyAccount = await User
+    .findOneAndUpdate(
+      { 
+        username: req.user.username, 
+        "friends.username": req.params.friendUsername, 
+        "friends.status": "pending" 
+      },
+      { $set: 
+        { 
+          "friends.$.status": req.params.response === "true" ? "friend" : "refused"
+        } 
+      },
+      { 
+        new: true, // Renvoie le document mis à jour
+      }
+    )
+    .orFail()
+
+    // //Add inside requested friend my profil with a 'pending' status
+ 
+   const friendAccount = await User
+      .findOneAndUpdate(
+        { username: req.params.friendUsername, "friends.username": req.user.username, "friends.status": "requested" },
+        { $set: { "friends.$.status": req.params.response === "true" ? "friend" : "refused" } },
+        { 
+          new: true, // Renvoie le document mis à jour
+        }
+      )
+      .orFail()
+
+    console.log("b", friendAccount)
+
+    return updatedMyAccount
 
   } catch (err) {
     next(err);
   }
 }
+async function removeFriendFromMyList(req, res, next) {
+  try {
+
+    //Note: Je modifie en ciblant username et non _id car en ciblant l'ID, l'ami modifié etait tjrs le premier 
+    //objet du tableau d'ami et non celui avec l'ID correspondant..
+
+    //Remove inside my list a friend with 'friend' status
+    const updatedMyAccount = await User
+    .findOneAndUpdate(
+      { 
+        username: req.user.username, 
+        "friends.username": req.params.friendUsername, 
+        "friends.status": "friend" 
+      },
+      { $pull: { friends: { username: req.params.friendUsername } } },
+      { 
+        new: true, // Renvoie le document mis à jour
+      }
+    )
+    .orFail()
+
+    //Remove inside a friend list me 
+    const updatedFriendAccount = await User
+    .findOneAndUpdate(
+      { username: req.params.friendUsername, "friends.username": req.user.username, "friends.status": "friend" },
+      { $pull: { friends: { username: req.user.username } } },
+      { 
+        new: true, // Renvoie le document mis à jour
+      }
+    )
+    .orFail()
+
+    return updatedMyAccount
+
+  } catch (err) {
+    next(err);
+  }
+}
+
 
 export {
   getAllUsers,
+  getAllUsersButMeAndMyFriends,
   getAllUsersButMySearchAndMeAndMyFriends,
   getMyProfil,
   getById,
@@ -227,7 +343,7 @@ export {
   updateAPresent,
   takeAPresent,
   putAPresentBackInTheList,
-
-  checkIfUserNameAlreadyExists,
-  checkIfEmailAlreadyExists,
+  requestToAddAFriend,
+  responsedFriendListRequest,
+  removeFriendFromMyList,
 };

@@ -11,6 +11,10 @@ router.get("/", userControler.getAllUsers);
 
 //GET ALL USERS BUT ME AND MY FRIENDS
 
+router.get("/allUsersButMeAndMyFriends", jwtUtils.authenticateJWT, userControler.getAllUsersButMeAndMyFriends);
+
+//GET ALL USERS BUT ME AND MY FRIENDS AND RESEARCH
+
 router.get("/allUsersButMySearchAndMeAndMyFriends/:username", jwtUtils.authenticateJWT, userControler.getAllUsersButMySearchAndMeAndMyFriends);
 
 //GET OWN 
@@ -67,6 +71,30 @@ router.put(
   "/:friendId/list/:friendListId/present/:friendPresentId/putAPresentBackInTheList",
   jwtUtils.authenticateJWT, 
   userControler.putAPresentBackInTheList
+);
+
+// USER1 MAKES A REQUEST TO GET A NEW FRIEND (USER2)
+
+router.put(
+  "/requestToAddAFriend/:friendId",
+  jwtUtils.authenticateJWT, 
+  userControler.requestToAddAFriend
+);
+
+// USER2 ANSWERS TO FRIEND REQUEST FROM USER 1
+
+router.put(
+  "/responseFriendRequest/:friendUsername/:response",
+  jwtUtils.authenticateJWT, 
+  userControler.responsedFriendListRequest
+);
+
+// USER1 REMOVE USER2 FROM HIS FRIEND LIST
+
+router.put(
+  "/removeFriendFromList/:friendUsername",
+  jwtUtils.authenticateJWT, 
+  userControler.removeFriendFromMyList
 );
 
 

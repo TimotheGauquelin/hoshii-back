@@ -1,20 +1,26 @@
 import jwt from "jsonwebtoken";
 
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  console.log(authHeader);
+  const AUTHORIZATION_HEADER = req.headers.authorization;
 
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-    jwt.verify(token, process.env.JWT_SECRET_CODE, (err, user) => {
+  if (AUTHORIZATION_HEADER) {
+    µ
+    const ACCESS_TOKEN = AUTHORIZATION_HEADER.split(" ")[1];
+
+    jwt.verify(ACCESS_TOKEN, process.env.JWT_SECRET_CODE, (err, user) => {
+
       if (err) res.status(403).json("Token is not valid!");
       req.user = user;
       next();
+
     });
+
   } else {
+
     return res
       .status(401)
-      .json("Vous n'êtes pas autorisé à faire ça ! (Token)");
+      .json("You're not authorised to do that ! (Token)");
+
   }
 };
 

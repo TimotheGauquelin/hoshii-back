@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken'
 
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    const AUTHORIZATION_HEADER = req.headers.authorization;
 
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
+    if (AUTHORIZATION_HEADER) {
+        const token = AUTHORIZATION_HEADER.split(' ')[1];
 
         jwt.verify(token, process.env.JWT_SECRET_CODE, (err, user) => {
             if (err) {
@@ -14,6 +14,7 @@ const authenticateJWT = (req, res, next) => {
             req.user = user;
             next();
         });
+        
     } else {
         res.sendStatus(401);
     }

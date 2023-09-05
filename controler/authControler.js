@@ -1,6 +1,6 @@
 import loginService from '../service/auth/loginService.js'
 import registerService from '../service/auth/registerService.js'
-import * as userService from '../service/userService.js'
+import * as checkIf from '../service/utils/checkIf.js'
 
 import Joi from 'joi';
 
@@ -8,34 +8,54 @@ async function registerControler(req, res, next) {
     
     try {
 
-      const checkIfUserNameAlreadyExists = await userService.checkIfUserNameAlreadyExists(req, res, next);
-      const checkIfEmailAlreadyExists = await userService.checkIfEmailAlreadyExists(req, res, next);
+      const CHECK_IF_USERNAME_ALREADY_EXISTS = await checkIf.checkIfUserNameAlreadyExists(req, res, next);
+      const CHECK_IF_EMAIL_ALREADY_EXISTS = await checkIf.checkIfEmailAlreadyExists(req, res, next);
 
-      if (checkIfUserNameAlreadyExists === null && checkIfEmailAlreadyExists === null) {
+      if (CHECK_IF_USERNAME_ALREADY_EXISTS === null && CHECK_IF_EMAIL_ALREADY_EXISTS === null) {
 
-        const schema = Joi.object({
+        const USER_JOI_MODEL = Joi.object({
+
           username: Joi.string()
                       .alphanum()
                       .min(3)
                       .max(30)
-                      .required(),
+                      .required()
+                      .messages({
+                        'string.alphanum': `Votre pseudo ne doit contenir que des lettres (sans accent)`,
+                        'string.empty': `Le champs "Username" est obligatoire`,
+                        'string.min': `Votre pseudo doit contenir minimum 3 caractères`,
+                        'string.max': `Votre pseudo doit contenir maximum 30 caractères`,
+                        'string.required': `Le champs "Username" est obligatoire`
+                      }),
           email: Joi.string()
-                    .email({ minDomainSegments: 2, tlds: { allow: ['fr', 'com'] } }),
-          password: Joi.string(),
-                      //  .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-          isAdmin: Joi.boolean().required(),
-          isActive: Joi.boolean().required(),
+                    .email({ minDomainSegments: 2, tlds: { allow: ['fr', 'com'] } })
+                    .messages({
+                      'string.empty': `Le champs "Email" est obligatoire`,
+                      'string.required': `Le champs "Email" est obligatoire`
+                    }),
+          password: Joi.string()
+                       .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+                       .messages({
+                        'string.empty': `Le champs "Mot de Passe" est obligatoire`,
+                        "string.pattern.base": "Votre Mot de Passe doit contenir 3 à 30 caractères",
+                      }),
+          checkPassword: Joi.string()
+                            .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+                            .messages({
+                            'string.empty': `Le champs "Confirmation de Mot de Passe" est obligatoire`,
+                            "string.pattern.base": "Votre Confirmation de Mot de Passe doit contenir 3 à 30 caractères",
+                            }),
         });
 
-        const {error, value} = schema.validate(req.body);
+        const {error, value} = USER_JOI_MODEL.validate(req.body);
 
         if(error) {
 
           res.status(400).json(error.details[0].message);
 
         } else {
-          const response = await registerService(value, res, next);
-          res.status(201).json(response);
+          const RESPONSE = await registerService(value, res, next);
+          res.status(201).json(RESPONSE);
 
         } 
 

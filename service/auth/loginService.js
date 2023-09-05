@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import User from "../../models/User.js";
 
 async function login (req, res, next) {
+
     try {
 
         const USER = await User.findOne({ username: req.body.username });
@@ -24,8 +25,6 @@ async function login (req, res, next) {
         if(ORIGINAL_PASSWORD !== req.body.password) {
             throw new CustomError(errorCodes.WRONG_LOG)
         }
-
-        console.log(USER)
 
         const ACCESS_TOKEN = jwt.sign(
             {
