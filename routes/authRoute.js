@@ -1,12 +1,11 @@
 import express from "express";
+import { loginControler, registerControler } from "../controler/authControler.js";
 
 const ROUTER = express.Router();
 
-import { loginControler, registerControler} from '../controler/authControler.js'
-
 //REGISTER
 
-ROUTER.post("/register", registerControler)
+ROUTER.post('/register', registerControler);
 
 //LOGIN
 

@@ -1,7 +1,7 @@
 {
-  "name": "hoshii-back",
+  "name": "symbol-games",
   "version": "1.0.0",
-  "description": "hoshii's API",
+  "description": "symbol games's API",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -11,15 +11,14 @@
   "author": "Timothé GAUQUELIN",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
-    "cypress": "^12.16.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.0.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@types/node": "^20.5.9",
