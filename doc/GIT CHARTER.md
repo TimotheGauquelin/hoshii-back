@@ -4,6 +4,13 @@ The command line to commit with git is : ***git commit -m ""***
 
 Inside quotation marks, the commit message must respect specific syntax
 
+### ID OF THE CARD
+
+To find the ID of the card, read the card URL and take the number after the last slash.
+In the example below, the ID of the card is 16
+
+Ex: https://trello.com/c/hcInQjUE/16-back-permettre-%C3%A0-un-admin-de-lister-les-%C3%A9preuves-faites-par-une-%C3%A9quipe
+
 ### TYPE OF THE COMMIT
 
 To specify the type of commit. It may be one of these four code.
@@ -26,4 +33,4 @@ Detailed description of the commit, what was done
 
 ### Exemple
 
-***git commit -m "[FEAT] [TG] - Create generic submit button"***
+***git commit -m "[AH-01][FEAT][TG] - Create generic submit button"***
