@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoute from "./routes/authRoute.js";
+import trialRoute from "./routes/trialRoute.js";
 
 const APP = express();
 
@@ -8,6 +9,7 @@ APP.use(cors());
 APP.use(express.json());
 
 APP.use("/api/auth", authRoute);
+APP.use("/api/trials", trialRoute);
 
 APP.get("/", (req, res) => {
   res.json(
